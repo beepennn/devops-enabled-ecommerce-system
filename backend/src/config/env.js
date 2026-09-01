@@ -6,10 +6,20 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
 
-  PORT: z.coerce.number().int().positive().default(5000),
+  PORT: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(5000),
 
   DB_HOST: z.string().min(1),
-  DB_PORT: z.coerce.number().int().positive().default(5432),
+
+  DB_PORT: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(5432),
+
   DB_NAME: z.string().min(1),
   DB_USER: z.string().min(1),
   DB_PASSWORD: z.string().min(1),
@@ -19,7 +29,31 @@ const envSchema = z.object({
     .default("false")
     .transform((value) => value === "true"),
 
-  JWT_SECRET: z.string().min(1),
+  FRONTEND_URL: z
+    .string()
+    .url()
+    .default("http://localhost:5173"),
+
+  JWT_ACCESS_SECRET: z
+    .string()
+    .min(32),
+
+  JWT_ACCESS_EXPIRES_IN: z
+    .string()
+    .default("15m"),
+
+  REFRESH_TOKEN_EXPIRES_DAYS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(7),
+
+  BCRYPT_ROUNDS: z.coerce
+    .number()
+    .int()
+    .min(10)
+    .max(14)
+    .default(12),
 });
 
 const result = envSchema.safeParse(process.env);
