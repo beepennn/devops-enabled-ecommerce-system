@@ -17,6 +17,9 @@ const {
 
 const app = express();
 
+const categoryRoutes =
+  require("./routes/categoryRoutes");
+
 app.disable("x-powered-by");
 
 app.use(helmet());
@@ -86,6 +89,11 @@ app.get(
 app.use(
   "/api/auth",
   authRoutes
+);
+
+app.use(
+  "/api/categories",
+  categoryRoutes
 );
 
 /* Keep these last */
