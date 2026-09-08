@@ -1,0 +1,82 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "database/**"
+      - ".github/workflows/backend-ci.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "database/**"
+      - ".github/workflows/backend-ci.yml"
+
+jobs:
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+
+        env:
+          POSTGRES_DB: ecommerce_test_db
+          POSTGRES_USER: ecommerce_test_user
+          POSTGRES_PASSWORD: ecommerce_test_password
+
+        ports:
+          - 5433:5432
+
+        options: >-
+          --health-cmd "pg_isready -U ecommerce_test_user -d ecommerce_test_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      NODE_ENV: test
+
+      PORT: 5001
+
+      DB_HOST: localhost
+      DB_PORT: 5433
+      DB_NAME: ecommerce_test_db
+      DB_USER: ecommerce_test_user
+      DB_PASSWORD: ecommerce_test_password
+      DB_SSL: "false"
+
+      FRONTEND_URL: http://localhost:5173
+
+      JWT_ACCESS_SECRET: github_actions_test_secret_that_is_long_enough_for_validation_123456789
+      JWT_ACCESS_EXPIRES_IN: 15m
+
+      REFRESH_TOKEN_EXPIRES_DAYS: 7
+      BCRYPT_ROUNDS: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Run backend test suite
+        run: npm test
