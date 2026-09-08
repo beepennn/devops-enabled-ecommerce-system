@@ -1,5 +1,18 @@
+const path = require("path");
 const { z } = require("zod");
-require("dotenv").config();
+const dotenv = require("dotenv");
+
+const environment =
+  process.env.NODE_ENV || "development";
+
+const envFile =
+  environment === "test"
+    ? ".env.test"
+    : ".env";
+
+dotenv.config({
+  path: path.resolve(process.cwd(), envFile),
+});
 
 const envSchema = z.object({
   NODE_ENV: z

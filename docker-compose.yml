@@ -29,9 +29,42 @@ services:
     networks:
       - ecommerce-network
 
+
+  postgres-test:
+    image: postgres:17-alpine
+    container_name: ecommerce-postgres-test
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ecommerce_test_db
+      POSTGRES_USER: ecommerce_test_user
+      POSTGRES_PASSWORD: ecommerce_test_password
+
+    ports:
+      - "5433:5432"
+
+    tmpfs:
+      - /var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ecommerce_test_user -d ecommerce_test_db"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+    networks:
+      - ecommerce-network
+
+
 volumes:
   postgres_data:
     name: ecommerce-postgres-data
+
 
 networks:
   ecommerce-network:
