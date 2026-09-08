@@ -9,6 +9,7 @@ module.exports = async () => {
       process.cwd(),
       ".env.test"
     ),
+    quiet: true,
   });
 
   console.log(

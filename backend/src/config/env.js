@@ -12,6 +12,7 @@ const envFile =
 
 dotenv.config({
   path: path.resolve(process.cwd(), envFile),
+  quiet: true,
 });
 
 const envSchema = z.object({
